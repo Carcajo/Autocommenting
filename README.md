@@ -9,6 +9,8 @@ In this project the following files:
  <li>main.py - executable file</li>
  <li>functions.py - functions of this program</li>
  <li>promts.py - filters for posts and responses to them</li>
+ <li>private_data.py - api_id, api_hash of userbot and debug_chat_id of admin</li>
+ <li>constants.py - constants of programm</li>
 </ul>
 
 
