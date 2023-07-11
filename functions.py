@@ -7,18 +7,32 @@ import pandas as pd
 import pygsheets
 
 @logger.catch
-def ask(prompt: str, context: Optional[str] = '') -> str:
+def ask(prompt, context=''):
     openai.api_key = API_KEY
     model_id = 'gpt-3.5-turbo'
     conversation = []
-    if len(context):
+    if len(context) > 0:
         conversation.append({'role': 'system', 'content': context})
     conversation.append({'role': 'user', 'content': prompt})
-    response = openai.ChatCompletion.create(model=model_id, messages=conversation)
-    api_usage = response['usage']
-    print('Total token consumed: {0}'.format(api_usage['total_tokens']))
 
-    return response.choices[0].message.content
+    max_retries = 3
+    retry_delay = 25
+    for retry in range(max_retries):
+        try:
+            response = openai.ChatCompletion.create(
+                model=model_id,
+                messages=conversation
+            )
+            api_usage = response['usage']
+            return response.choices[0].message.content
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            if retry < max_retries - 1:
+                print(f"Retrying in {retry_delay} seconds...")
+                time.sleep(retry_delay)
+            else:
+                print("Maximum retries reached. Moving on.")
+                break
 
 
 @logger.catch
